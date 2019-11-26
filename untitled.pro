@@ -8,7 +8,7 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = untitled
+TARGET = mountdriver
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
@@ -25,10 +25,20 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+    encodercount.cpp \
+    globalvars.cpp
 
 HEADERS += \
-        mainwindow.h
+        mainwindow.h \
+    encodercount.h \
+    globalvars.h
 
 FORMS += \
         mainwindow.ui
+
+LIBS += -lsofa_c -lboost_date_time -lpigpiod_if2 -lrt -lgmp
+
+target.path = /tmp/untitled # path on device
+INSTALLS += target
+
