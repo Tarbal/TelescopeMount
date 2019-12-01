@@ -105,9 +105,9 @@ void MainWindow::MotorControl(int powerPercent, int motorLead1, int motorLead2, 
 void MainWindow::keepDriving(double rA, double dec)
 {
     convert(rA, dec, targetAz, targetAlt, targetZen);
-    if(sqrt(pow((angleAz - targetAz), 2) + pow((angleAlt - targetAlt), 2)) > 0.1)
+    if(sqrt(pow(((double)angleAz - targetAz), 2) + pow(((double)angleAlt - targetAlt), 2)) > 0.1)
     {
-        MotorControl(250, InputRotateA, InputRotateB, true);
+        MotorControl(128, InputRotateA, InputRotateB, true);
     }
 }
 

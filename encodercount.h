@@ -2,44 +2,58 @@
 #define ENCODERCOUNT_H
 #include <QtCore>
 #include <globalvars.h>
-#include <boost/multiprecision/gmp.hpp>
 #include <functional>
 #include <pigpiod_if2.h>
 #include <stdint.h>
 
-using namespace boost;
-using namespace multiprecision;
+typedef void (*re_decoderCB_t)(int, int);
 
 class encoderCount : public QThread
 {
 
 public:
-   encoderCount(unsigned int gpioA, unsigned int gpioB, bool Az);
-   bool whichAxis;
+   encoderCount(unsigned int pi, unsigned int gpioNumberA, unsigned int gpioNumberB, re_decoderCB_t callback);
 
    void run();
 
-   int myCallback(int direction);
-   void re_cancel(void);
-   void _pulse(int gpio, int level);
+   int levelARotate;
+   int levelBRotate;
+
+   int levelAIncline;
+   int levelBIncline;
+
+   int cba;
+   int cbb;
+   re_decoderCB_t myCallback;
+   void CBcancel(void);
+   void _pulse(int gpio, int level, int tick);
+
+   int lastABRotate;
+   int lastABIncline;
+
+   int currentABRotate;
+   int currentABIncline;
 
    /* Need a static callback to link with C. */
-   static uint32_t _pulseEx(unsigned int gpio, unsigned int level, void *user);
+   static void _pulseEx(int pinum, unsigned int gpio, unsigned int level, uint32_t tick, void *user);
+
 
 private:
 
-   QMutex mutie;
-   mpf_float_50 getPosition(bool Az);
-
+   int pinA;
+   int pinB;
    int levelA;
    int levelB;
    int oldLevelA;
    int oldLevelB;
    int oldAB;
-   uint32_t counterAz;
-   uint32_t counterAlt;
-   int pinA;
-   int pinB;
+   int outcome[16] =
+   {
+       0, 1, -1, 0,
+       -1, 0, 0, 1,
+       1, 0, 0, -1,
+       0, -1, 1, 0
+   };
 
 };
 

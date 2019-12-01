@@ -11,14 +11,13 @@ int main(int argc, char *argv[])
     MainWindow w;
     w.show();
 
-    piNumber = pigpio_start(dummy1, dummy2);
+    piNumber = pigpio_start(NULL, NULL);
 
-    encoderCount countAz(encoderRotateA, encoderRotateB, true);
-    encoderCount countAlt(encoderInclineA, encoderInclineB, false);
+    encoderCount countAz(piNumber, encoderRotateA, encoderRotateB, actualCallback);
+    encoderCount countAlt(piNumber, encoderInclineA, encoderInclineB, actualCallback);
 
     countAz.start(QThread::TimeCriticalPriority);
     countAlt.start(QThread::TimeCriticalPriority);
 
     return a.exec();
-
 }
