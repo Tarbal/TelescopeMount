@@ -1,10 +1,6 @@
 #ifndef GLOBALVARS_H
 #define GLOBALVARS_H
-#include <boost/multiprecision/gmp.hpp>
 #include "encodercount.h"
-
-using namespace boost;
-using namespace multiprecision;
 
 extern int piNumber;
 extern bool programRunning;
@@ -20,11 +16,19 @@ extern const int encoderRotateB;
 extern const int encoderInclineA;
 extern const int encoderInclineB;
 
-extern mpf_float_50 angleAz;
-extern mpf_float_50 angleAlt;
+extern double targetAz;
+extern double targetAlt;
+extern double targetZen;
 
-extern mpz_int counterAz;
-extern mpz_int counterAlt;
+extern double angleAz;
+extern double angleAlt;
+
+extern double AltInc;
+extern double AzInc;
+extern double incremental;
+
+extern int counterAz;
+extern int counterAlt;
 
 extern double gearRatio;
 extern int quadratureStates;
@@ -32,6 +36,13 @@ extern int quadratureStates;
 extern int whichAxisA;  // Az = 0
 extern int whichAxisB;  // Alt = 1;
 
+extern double rAscension;
+extern double declination;
+
+extern double jTime1;
+extern double jTime2;
+
 void actualCallback(int direction, int axis);
+
 
 #endif // GLOBALVARS_H

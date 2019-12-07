@@ -1,6 +1,6 @@
 #ifndef ENCODERCOUNT_H
 #define ENCODERCOUNT_H
-#include <QtCore>
+#include <QThread>
 #include <globalvars.h>
 #include <functional>
 #include <pigpiod_if2.h>

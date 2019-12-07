@@ -5,6 +5,7 @@
 #include <globalvars.h>
 #include <iostream>
 #include <stdint.h>
+#include <QMutex>
 
 encoderCount::encoderCount(unsigned int pi, unsigned int gpioNumberA, unsigned int gpioNumberB, re_decoderCB_t callback)
 {
@@ -34,8 +35,6 @@ encoderCount::encoderCount(unsigned int pi, unsigned int gpioNumberA, unsigned i
 
 void encoderCount::_pulseEx(int pinum, unsigned int gpio, unsigned int level, uint32_t tick, void *user)
 {
-    QMutex mutie;
-    mutie.lock();
     if(pinum > -1)
     {
         encoderCount *mySelf = (encoderCount *) user;
@@ -44,7 +43,6 @@ void encoderCount::_pulseEx(int pinum, unsigned int gpio, unsigned int level, ui
 
         return;
     }
-    mutie.unlock();
 }
 
 void encoderCount::_pulse(int gpio, int level, int tick)

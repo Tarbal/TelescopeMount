@@ -1,51 +1,63 @@
 #include <globalvars.h>
-#include <boost/multiprecision/gmp.hpp>
-#include <iostream>
-
-using namespace boost;
-using namespace multiprecision;
+#include "mainwindow.h"
+#include <cmath>
 
 int piNumber;
 bool programRunning;
 int whichAxisA = 0;
 int whichAxisB = 1;
 
-const int encoderRotateA = 6;
-const int encoderRotateB = 27;
+const int encoderRotateA = 27;
+const int encoderRotateB = 22;
 
-const int encoderInclineA = 20;
-const int encoderInclineB = 21;
+const int encoderInclineA = 23;
+const int encoderInclineB = 24;
 
 const int pinRotateA = 13;
 const int pinRotateB = 19;
 const int pinInclineA = 12;
 const int pinInclineB = 18;
 
-mpf_float_50 angleAz;
-mpf_float_50 angleAlt;
+double targetAz = 0;
+double targetAlt = 0;
+double targetZen = 0;
 
-mpz_int counterAz;
-mpz_int counterAlt;
+double angleAz;
+double angleAlt;
+
+int counterAz;
+int counterAlt;
 
 double gearRatio = 28.8;
 int quadratureStates = 40000;
 
+double rAscension;
+double declination;
+
+double jTime1;
+double jTime2;
+
+double AzInc = 0;
+double AltInc = 0;
+double incremental = 32;
+
 void actualCallback(int direction, int axis)
 {
-//    std::cout << "print anything " << std::endl;
-
     if(axis == 0)
     {
         counterAz += direction;
-        angleAz = (mpf_float_50)counterAz * 2 * 3.141592654 / (gearRatio * quadratureStates);
-        std::cout << counterAz << " " << angleAz * 180 / 3.141592654 << std::endl;
+        if(counterAz > quadratureStates * gearRatio || counterAz < -quadratureStates * gearRatio)
+            counterAz = 0;
+        angleAz = counterAz * 2 * 3.141592654 / (gearRatio * quadratureStates);
+
     }
     else if (axis == 1)
     {
         counterAlt += direction;
-        angleAlt = (mpf_float_50)counterAlt * 2 * 3.141592654 / (gearRatio * quadratureStates);
-        std::cout << "something wrong " << std::endl;
+        if(counterAlt > 40000 * 28.8 || counterAlt < -40000 * 28.8)
+            counterAlt = 0;
+        angleAlt = counterAlt * 2 * 3.141592654 / (gearRatio * quadratureStates);
     }
-    else std::cout << "wrong again " << std::endl;
+
 }
 

@@ -1,11 +1,12 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <sofa.h>
-#include <boost/date_time/posix_time/posix_time.hpp>
-#include <math.h>
 #include <pigpiod_if2.h>
 #include <globalvars.h>
 #include <boost/multiprecision/gmp.hpp>
+#include <cmath>
+#include <iostream>
+
+bool MainWindow::tracking = false;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -13,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     motorSetup();
     ui->setupUi(this);
+    on_calibrateButton_clicked();
 }
 
 MainWindow::~MainWindow()
@@ -20,13 +22,16 @@ MainWindow::~MainWindow()
     tracking = false;
     calibrating = false;
     programRunning = false;
+    stopAxis(whichAxisA);
+    stopAxis(whichAxisB);
     pigpio_stop(piNumber);
     delete ui;
 }
 
 void MainWindow::on_trackButton_clicked()
 {
-    stopAll();
+    stopAxis(whichAxisA);
+    stopAxis(whichAxisB);
 
     if(!tracking)
     {
@@ -34,7 +39,8 @@ void MainWindow::on_trackButton_clicked()
         ui->trackButton->setStyleSheet("QPushButton {color: green;}");
         calibrating = false;
         ui->calibrateButton->setStyleSheet("QPushButton {color: black;}");
-        keepDriving(ui->RAField->text().toDouble() * 3.141592654 / 180, ui->decField->text().toDouble() * 3.141592654 / 180);
+        rAscension = ui->RAField->text().toDouble() * 3.141592654 / 12;
+        declination = ui->decField->text().toDouble() * 3.141592654 / 180;
     }
     else
     {
@@ -45,18 +51,11 @@ void MainWindow::on_trackButton_clicked()
     }
 }
 
-void MainWindow::convert(double rightAscension, double declination, double &azimuth, double &altitude, double &Zen)
-{
-    datetime dtime = getTime(to_iso_string(boost::posix_time::microsec_clock::universal_time()));
-    iauDtf2d("UTC", dtime.year, dtime.month, dtime.day, dtime.hour, dtime.minute, dtime.second + dtime.fraction, &jTime1, &jTime2);
-    iauAtco13(rightAscension, declination, 0.0, 0.0, 0.0, 0.0, jTime1, jTime2, 0.0, -98.339273*3.141592654/180,
-              30.334595*3.141592654/180, 356.616, 0.0, 0.0, 1013.25, 16.0, 0.5, 0.59, &azimuth, &Zen, &hourAngle, &CIOdec, &CIORA, &EqOrigins);
-    altitude = (3.141592654/2) - Zen;
-}
 
 void MainWindow::on_calibrateButton_clicked()
 {
-    stopAll();
+    stopAxis(whichAxisA);
+    stopAxis(whichAxisB);
 
     if(!calibrating)
     {
@@ -71,50 +70,60 @@ void MainWindow::on_calibrateButton_clicked()
         ui->calibrateButton->setStyleSheet("QPushButton {color: black;}");
         tracking = true;
         ui->trackButton->setStyleSheet("QPushButton {color: green;}");
-        keepDriving(ui->RAField->text().toDouble() * 3.141592654 / 180, ui->decField->text().toDouble() * 3.141592654 / 180);
+        rAscension = ui->RAField->text().toDouble() * 3.141592654 / 12;
+        declination = ui->decField->text().toDouble() * 3.141592654 / 180;
+//        convert(rAscension, declination, targetAz, targetAlt, targetZen);
     }
 }
 
 void MainWindow::motorSetup()
 {
-    set_mode(piNumber, InputInclineA, PI_OUTPUT);
-    set_mode(piNumber, InputInclineB, PI_OUTPUT);
-    set_mode(piNumber, InputRotateA, PI_OUTPUT);
-    set_mode(piNumber, InputRotateB, PI_OUTPUT);
+    set_mode(piNumber, pinInclineA, PI_OUTPUT);
+    set_mode(piNumber, pinInclineB, PI_OUTPUT);
+    set_mode(piNumber, pinRotateA, PI_OUTPUT);
+    set_mode(piNumber, pinRotateB, PI_OUTPUT);
 
-    set_PWM_range(piNumber, InputInclineA, 512);
-    set_PWM_range(piNumber, InputInclineB, 512);
-    set_PWM_range(piNumber, InputRotateA, 512);
-    set_PWM_range(piNumber, InputRotateB, 512);
+    set_PWM_range(piNumber, pinInclineA, 512);
+    set_PWM_range(piNumber, pinInclineB, 512);
+    set_PWM_range(piNumber, pinRotateA, 512);
+    set_PWM_range(piNumber, pinRotateB, 512);
 }
 
-void MainWindow::MotorControl(int powerPercent, int motorLead1, int motorLead2, bool forward)
-{
-    if(forward)
-    {
-        set_PWM_dutycycle(piNumber, motorLead2, 0);
-        set_PWM_dutycycle(piNumber, motorLead1, powerPercent);
-    }
-    else
-    {
-        set_PWM_dutycycle(piNumber, motorLead1, 0);
-        set_PWM_dutycycle(piNumber, motorLead2, powerPercent);
-    }
-}
 
-void MainWindow::keepDriving(double rA, double dec)
+void MainWindow::stopAxis(int axis)
 {
-    convert(rA, dec, targetAz, targetAlt, targetZen);
-    if(sqrt(pow(((double)angleAz - targetAz), 2) + pow(((double)angleAlt - targetAlt), 2)) > 0.1)
+    if(axis == 0)
     {
-        MotorControl(128, InputRotateA, InputRotateB, true);
+        set_PWM_dutycycle(piNumber, pinRotateA, 0);
+        set_PWM_dutycycle(piNumber, pinRotateB, 0);
+    }
+    if(axis == 1)
+    {
+        set_PWM_dutycycle(piNumber, pinInclineA, 0);
+        set_PWM_dutycycle(piNumber, pinInclineB, 0);
     }
 }
 
-void MainWindow::stopAll()
+void MainWindow::on_upButton_clicked()
 {
-    set_PWM_dutycycle(piNumber, InputInclineA, 0);
-    set_PWM_dutycycle(piNumber, InputInclineB, 0);
-    set_PWM_dutycycle(piNumber, InputRotateA, 0);
-    set_PWM_dutycycle(piNumber, InputRotateB, 0);
+    if(!tracking)
+        AltInc += incremental;
+}
+
+void MainWindow::on_downButton_clicked()
+{
+    if(!tracking)
+        AltInc -= incremental;
+}
+
+void MainWindow::on_rightButton_clicked()
+{
+    if(!tracking)
+        AzInc += incremental;
+}
+
+void MainWindow::on_leftButton_clicked()
+{
+    if(!tracking)
+        AzInc -= incremental;
 }
