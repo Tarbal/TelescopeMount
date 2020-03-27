@@ -4,6 +4,7 @@
 #include <thread>
 #include <globalvars.h>
 #include <iostream>
+#include <stdio.h>
 #include <stdint.h>
 #include <QMutex>
 
@@ -23,6 +24,9 @@ encoderCount::encoderCount(unsigned int pi, unsigned int gpioNumberA, unsigned i
 
     currentABRotate = 0;
     currentABIncline = 0;
+
+    debugAz = 0;
+    debugAlt = 0;
 
     myCallback = callback;
 
@@ -48,33 +52,46 @@ void encoderCount::_pulseEx(int pinum, unsigned int gpio, unsigned int level, ui
 void encoderCount::_pulse(int gpio, int level, int tick)
 {
     QMutex mutie;
+    int index;
     mutie.lock();
        if(gpio == encoderRotateA)
        {
            levelARotate = level;
            currentABRotate = (levelARotate << 1) | levelBRotate;
-           myCallback(outcome[(lastABRotate << 2) | currentABRotate], whichAxisA);
+           index = (lastABRotate << 2) | currentABRotate;
+           if (index > 15 || index < 0)
+               index = 0;
+           myCallback(outcome[index], whichAxisA);
            lastABRotate = currentABRotate;
        }
        else if (gpio == encoderRotateB)
        {
            levelBRotate = level;
            currentABRotate = (levelARotate << 1) | levelBRotate;
-           myCallback(outcome[(lastABRotate << 2) | currentABRotate], whichAxisA);
+           index = (lastABRotate << 2) | currentABRotate;
+           if (index > 15 || index < 0)
+               index = 0;
+           myCallback(outcome[index], whichAxisA);
            lastABRotate = currentABRotate;
        }
        else if(gpio == encoderInclineA)
        {
            levelAIncline = level;
            currentABIncline = (levelAIncline << 1) | levelBIncline;
-           myCallback(outcome[(lastABIncline << 2) | currentABIncline], whichAxisB);
+           index = (lastABIncline << 2) | currentABIncline;
+           if (index > 15 || index < 0)
+               index = 0;
+           myCallback(outcome[index], whichAxisB);
            lastABIncline = currentABIncline;
        }
        else if (gpio == encoderInclineB)
        {
            levelBIncline = level;
            currentABIncline = (levelAIncline << 1) | levelBIncline;
-           myCallback(outcome[(lastABIncline << 2) | currentABIncline], whichAxisB);
+           index = (lastABIncline << 2) | currentABIncline;
+           if (index > 15 || index < 0)
+               index = 0;
+           myCallback(outcome[index], whichAxisB);
            lastABIncline = currentABIncline;
        }
        mutie.unlock();
@@ -87,6 +104,13 @@ void encoderCount::CBcancel(void)
    callback_cancel(cbb);
 }
 
+void encoderCount::speedOutput()
+{
+    double debugSpeed = std::abs(debugAz - counterAz) * 360 * 3600 / (40000 * 28.8);
+    std::cout << " Az: " << counterAz << " " << debugAz << " " << debugSpeed << " " << "arcsec/sec" << std::endl;
+    debugAz = counterAz;
+}
+
 void encoderCount::run()
 {
     cba = callback_ex(piNumber, pinA, EITHER_EDGE, _pulseEx, this);
@@ -94,7 +118,8 @@ void encoderCount::run()
 
     while(programRunning)
     {
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+//        speedOutput();
         continue;
     }
     encoderCount::CBcancel();

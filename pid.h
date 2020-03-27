@@ -47,6 +47,9 @@ private:
     double CIOdec;
     double CIORA;
     double EqOrigins;
+
+    int timeInterval;
+    int debugTime;
 };
 
 #endif // PID_H

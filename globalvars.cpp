@@ -7,23 +7,27 @@ bool programRunning;
 int whichAxisA = 0;
 int whichAxisB = 1;
 
-const int encoderRotateA = 27;
-const int encoderRotateB = 22;
+const int encoderRotateA = 22;
+const int encoderRotateB = 27;
 
 const int encoderInclineA = 23;
 const int encoderInclineB = 24;
 
-const int pinRotateA = 13;
-const int pinRotateB = 19;
+const int pinRotateA = 19;
+const int pinRotateB = 13;
 const int pinInclineA = 12;
 const int pinInclineB = 18;
 
-double targetAz = 0;
-double targetAlt = 0;
-double targetZen = 0;
+double targetAz;
+double targetAlt;
+double targetZen;
+
+const double polarisRA = 37.95291667 * 3.1415927654 / 180;
+const double polarisDEC = 89.2641667 * 3.1415927654 / 180;
 
 double angleAz;
 double angleAlt;
+double angleZen;
 
 int counterAz;
 int counterAlt;
@@ -54,7 +58,7 @@ void actualCallback(int direction, int axis)
     else if (axis == 1)
     {
         counterAlt += direction;
-        if(counterAlt > 40000 * 28.8 || counterAlt < -40000 * 28.8)
+        if(counterAlt > quadratureStates * gearRatio || counterAlt < -quadratureStates * gearRatio)
             counterAlt = 0;
         angleAlt = counterAlt * 2 * 3.141592654 / (gearRatio * quadratureStates);
     }

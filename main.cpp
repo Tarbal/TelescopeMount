@@ -17,8 +17,8 @@ int main(int argc, char *argv[])
     encoderCount countAz(piNumber, encoderRotateA, encoderRotateB, actualCallback);
     encoderCount countAlt(piNumber, encoderInclineA, encoderInclineB, actualCallback);
 
-    PID pidAz(0.55, 0.3, 0.9, 0);
-    PID pidAlt(0.55, 0.3, 0.9, 1);
+    PID pidAz(3500, 3000, 31.6875, 0);
+    PID pidAlt(900, 0.205, 250, 1);
 
     countAz.start(QThread::TimeCriticalPriority);
     countAlt.start(QThread::TimeCriticalPriority);

@@ -16,6 +16,8 @@ public:
 
    void run();
 
+   void speedOutput();
+
    int levelARotate;
    int levelBRotate;
 
@@ -40,6 +42,8 @@ public:
 
 private:
 
+   int debugAz;
+   int debugAlt;
    int pinA;
    int pinB;
    int levelA;

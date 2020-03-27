@@ -16,12 +16,16 @@ extern const int encoderRotateB;
 extern const int encoderInclineA;
 extern const int encoderInclineB;
 
+extern const double polarisRA;
+extern const double polarisDEC;
+
 extern double targetAz;
 extern double targetAlt;
 extern double targetZen;
 
 extern double angleAz;
 extern double angleAlt;
+extern double angleZen;
 
 extern double AltInc;
 extern double AzInc;
