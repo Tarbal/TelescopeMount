@@ -1,7 +1,7 @@
 # TelescopeMount
 
-Here is some telescope mount control software which can be used with any mount using DC motors and incremental encoders,
-all controlled by a Raspberry Pi 3b+ (untested on others!). This software does not include geometric corrections for 
+Here is some telescope mount control software which can be used with any mount using DC gear motors and incremental encoders,
+all controlled by a Raspberry Pi 3b+ (untested on other versions). This software does not include geometric corrections for 
 mechanical imperfections. If it does not point precisely, then you have some mechanical problems -- most likely backlash.
 RA and Dec should be entered in terms of epoch 2000 after calibrating/aligning with polaris (If you are in the
 southern hemisphere, set the polaris RA and DEC in globalvars.cpp to a convenient star which you wish to use to calibrate).
@@ -21,8 +21,16 @@ The variables pinRotateA, pinRotateB, PinInclineA, and PinInclineB correspond to
 motor drivers' PWM connection. The same goes for the encoderRotate and encoderIncline variables.
 
 In order to compile on a Raspberry Pi 3b+, you will need to link the appropriate libraries. I suggest you compile
-within QTCreator after you have downloaded and installed the boost, pigpio, and sofa libraries. Tested on Ubuntu 18.04 only.
+within QTCreator after you have downloaded and installed the boost, pigpio, and sofa libraries. Then, you need to 
+run pigpiod. If you want it to run automatically at startup, add the following
+
+#!/bin/sh -e
+
+pigpiod;
+exit 0;
+
+to your /etc/rc.local file. If it does not exist, then create it. All of this has been tested on Ubuntu 18.04 only.
 Good luck.
 
-Once you have done all of this, You still need to tune the PID parameters in the main function. I cannot stress how
+Once you have followed every step, You still need to tune the PID parameters in the main function. I cannot stress how
 important this is.
