@@ -20,8 +20,8 @@ The variables pinRotateA, pinRotateB, PinInclineA, and PinInclineB correspond to
 motor drivers' PWM connection. The same goes for the encoderRotate and encoderIncline variables.
 
 In order to compile on a Raspberry Pi 3b+, you will need to link the appropriate libraries. I suggest you compile
-within QTCreator after you have downloaded and installed the boost, pigpio, and sofa libraries. Tested on Ubuntu 18.04
-and 20.04. Good luck.
+within QTCreator after you have downloaded and installed the boost, pigpio, and sofa libraries. Tested on Ubuntu 18.04 only.
+Good luck.
 
 Once you have done all of this, You still need to tune the PID parameters in the main function. I cannot stress how
 important this is.
