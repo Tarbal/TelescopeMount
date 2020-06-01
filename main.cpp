@@ -1,3 +1,6 @@
+// Copyright John Emil Petersen III 2019-2020
+// GNU Public License
+
 #include "mainwindow.h"
 #include "encodercount.h"
 #include <QApplication>

@@ -4,6 +4,7 @@
 
 int piNumber;
 bool programRunning;
+bool tracking = false;
 int whichAxisA = 0;
 int whichAxisB = 1;
 

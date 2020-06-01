@@ -6,12 +6,11 @@
 #include <cmath>
 #include <iostream>
 
-bool MainWindow::tracking = false;
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    tracking = false;
     motorSetup();
     ui->setupUi(this);
     on_calibrateButton_clicked();

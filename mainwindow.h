@@ -15,8 +15,6 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    static bool tracking;
-
     static void stopAxis(int axis);
     void keepDriving(double rA, double dec);
     void motorSetup();

@@ -4,6 +4,7 @@
 
 extern int piNumber;
 extern bool programRunning;
+extern bool tracking;
 
 extern const int pinRotateA;
 extern const int pinRotateB;
