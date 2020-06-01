@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include <QMutex>
 
-encoderCount::encoderCount(unsigned int pi, unsigned int gpioNumberA, unsigned int gpioNumberB, re_decoderCB_t callback)
+encoderCount::encoderCount(unsigned int gpioNumberA, unsigned int gpioNumberB, re_decoderCB_t callback)
 {
     levelARotate = gpio_read(piNumber, encoderRotateA);
     levelBRotate = gpio_read(piNumber, encoderRotateB);
@@ -43,13 +43,13 @@ void encoderCount::_pulseEx(int pinum, unsigned int gpio, unsigned int level, ui
     {
         encoderCount *mySelf = (encoderCount *) user;
 
-        mySelf->_pulse(gpio, level, tick);
+        mySelf->_pulse(gpio, level);
 
         return;
     }
 }
 
-void encoderCount::_pulse(int gpio, int level, int tick)
+void encoderCount::_pulse(int gpio, int level)
 {
     QMutex mutie;
     int index;
@@ -106,7 +106,7 @@ void encoderCount::CBcancel(void)
 
 void encoderCount::speedOutput()
 {
-    double debugSpeed = std::abs(debugAz - counterAz) * 360 * 3600 / (40000 * 28.8);
+    double debugSpeed = std::abs(debugAz - counterAz) * 360 * 3600 / (quadratureStates * 28.8);
     std::cout << " Az: " << counterAz << " " << debugAz << " " << debugSpeed << " " << "arcsec/sec" << std::endl;
     debugAz = counterAz;
 }

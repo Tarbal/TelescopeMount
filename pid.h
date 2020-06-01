@@ -7,7 +7,7 @@ class PID : public QThread
 {
 public:
     PID(float kp, float ki, float kd, int axis);
-    void motorControl(double speed, int axis, int motorLead1, int motorLead2, bool forward);
+    void motorControl(double speed, int motorLead1, int motorLead2, bool forward);
     void run();
 
 private:

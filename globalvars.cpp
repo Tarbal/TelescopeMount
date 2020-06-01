@@ -8,6 +8,22 @@ bool tracking = false;
 int whichAxisA = 0;
 int whichAxisB = 1;
 
+// change to your latitude and longitude in units of radians
+double longitude = -10*3.141592654/180;
+double latitude = 25*3.141592654/180;
+
+// pressure at your location and altitude in mB
+double pressure = 1013.25;
+
+// temperature at your location and altitude in degrees celcius
+double temperature = 20;
+
+// humidity at your location and altitude as a decimal percentage
+double humidity = 0.3;
+
+// wavelength which you wish to observe in microns
+double wavelength = 0.55;
+
 // encoder gpio pins
 const int encoderRotateA = 22;
 const int encoderRotateB = 27;

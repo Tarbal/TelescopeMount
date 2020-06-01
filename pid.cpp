@@ -130,7 +130,7 @@ double PID::clampAlt(double zen)
     else return alt;
 }
 
-void PID::motorControl(double speed, int axis, int motorLead1, int motorLead2, bool forward)
+void PID::motorControl(double speed, int motorLead1, int motorLead2, bool forward)
 {
     double difference;
 
@@ -184,8 +184,8 @@ void PID::run()
         {
             datetime dtime = getTime(to_iso_string(boost::posix_time::microsec_clock::universal_time()));
             iauDtf2d("UTC", dtime.year, dtime.month, dtime.day, dtime.hour, dtime.minute, dtime.second + dtime.fraction / 1e6, &jTime1, &jTime2);
-            iauAtco13(rAscension, declination, 0.0, 0.0, 0.0, 0.0, jTime1, jTime2, 0.0, -98.339273*3.141592654/180,
-                      30.334595*3.141592654/180, 356.616, 0.0, 0.0, 1013.25, 16.0, 0.5, 0.59, &targetAz, &targetZen, &hourAngle, &CIOdec, &CIORA, &EqOrigins);
+            iauAtco13(rAscension, declination, 0.0, 0.0, 0.0, 0.0, jTime1, jTime2, 0.0, longitude,
+                      latitude, 356.616, 0.0, 0.0, pressure, temperature, humidity, wavelength, &targetAz, &targetZen, &hourAngle, &CIOdec, &CIORA, &EqOrigins);
 
             targetAlt = clampAlt(targetZen);
 
@@ -193,9 +193,9 @@ void PID::run()
 
 
             if(axisID == 0)
-                motorControl(std::abs(output), axisID, pinRotateA, pinRotateB, turnForward(axisID));
+                motorControl(std::abs(output), pinRotateA, pinRotateB, turnForward(axisID));
             else if(axisID == 1)
-                motorControl(std::abs(output), axisID, pinInclineA, pinInclineB, turnForward((axisID)));
+                motorControl(std::abs(output), pinInclineA, pinInclineB, turnForward((axisID)));
 
 //            report();
 
@@ -203,9 +203,9 @@ void PID::run()
         else
         {
             if(axisID == 0)
-                motorControl(std::abs(AzInc), 0, pinRotateA, pinRotateB, whichDirection(AzInc));
+                motorControl(std::abs(AzInc), pinRotateA, pinRotateB, whichDirection(AzInc));
             else if(axisID == 1)
-                motorControl(std::abs(AltInc), 1, pinInclineA, pinInclineB, whichDirection(AltInc));
+                motorControl(std::abs(AltInc), pinInclineA, pinInclineB, whichDirection(AltInc));
         }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(timeInterval));

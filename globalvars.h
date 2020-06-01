@@ -6,6 +6,13 @@ extern int piNumber;
 extern bool programRunning;
 extern bool tracking;
 
+extern double latitude;
+extern double longitude;
+extern double temperature;
+extern double pressure;
+extern double humidity;
+extern double wavelength;
+
 extern const int pinRotateA;
 extern const int pinRotateB;
 extern const int pinInclineA;

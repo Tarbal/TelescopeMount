@@ -12,7 +12,7 @@ class encoderCount : public QThread
 {
 
 public:
-   encoderCount(unsigned int pi, unsigned int gpioNumberA, unsigned int gpioNumberB, re_decoderCB_t callback);
+   encoderCount(unsigned int gpioNumberA, unsigned int gpioNumberB, re_decoderCB_t callback);
 
    void run();
 
@@ -28,7 +28,7 @@ public:
    int cbb;
    re_decoderCB_t myCallback;
    void CBcancel(void);
-   void _pulse(int gpio, int level, int tick);
+   void _pulse(int gpio, int level);
 
    int lastABRotate;
    int lastABIncline;

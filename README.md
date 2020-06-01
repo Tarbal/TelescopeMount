@@ -11,7 +11,8 @@ A future version may or may not be public, but it will have it's own repository.
 GNU General Public License (GNU GPL), copyright John Emil Petersen III, 2019-2020.
 
 You simply need to change the global variables in globalvars.cpp, such as gearRatio and quadratureStates to what is 
-appropriate for your mount.
+appropriate for your mount. You may want to measure environmental variables such as temperature with instrumentation, 
+rather than updating every time and compiling.
 
 Set the variable quadrature states to the number of pulses per revolution on your encoder times 4. So, if your encoders are
 10,000 ppr, you set quadratureStates = 40000.

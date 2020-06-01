@@ -17,8 +17,8 @@ int main(int argc, char *argv[])
 
     piNumber = pigpio_start(NULL, NULL);
 
-    encoderCount countAz(piNumber, encoderRotateA, encoderRotateB, actualCallback);
-    encoderCount countAlt(piNumber, encoderInclineA, encoderInclineB, actualCallback);
+    encoderCount countAz(encoderRotateA, encoderRotateB, actualCallback);
+    encoderCount countAlt(encoderInclineA, encoderInclineB, actualCallback);
 
     // PID values need to be tuned to your mount.
     PID pidAz(1, 0.5, 0.5, 0);   // PID(P, I, D, axis)
