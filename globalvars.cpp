@@ -8,12 +8,14 @@ bool tracking = false;
 int whichAxisA = 0;
 int whichAxisB = 1;
 
+// encoder gpio pins
 const int encoderRotateA = 22;
 const int encoderRotateB = 27;
 
 const int encoderInclineA = 23;
 const int encoderInclineB = 24;
 
+// motor gpio pins
 const int pinRotateA = 19;
 const int pinRotateB = 13;
 const int pinInclineA = 12;
@@ -23,6 +25,7 @@ double targetAz;
 double targetAlt;
 double targetZen;
 
+// align to polaris manually, in calibrate mode, before hitting track (slew)
 const double polarisRA = 37.95291667 * 3.1415927654 / 180;
 const double polarisDEC = 89.2641667 * 3.1415927654 / 180;
 
@@ -33,7 +36,10 @@ double angleZen;
 int counterAz;
 int counterAlt;
 
+// gear ratio
 double gearRatio = 28.8;
+
+// number of quadrature states your incremental encoders are capable of (PPR times 4)
 int quadratureStates = 40000;
 
 double rAscension;
@@ -65,4 +71,27 @@ void actualCallback(int direction, int axis)
     }
 
 }
+
+// in case you want to get rid of backlash, this can get you started
+
+/*
+    if(tracking && axis == 0 && direction != lastDirectionAz)
+    {
+        backlashAz--;
+        if(backlashAz < 1)
+        {
+            backlashAz = 1000;
+            lastDirectionAz = direction;
+        }
+    }
+    else if(tracking && axis == 1 && direction != lastDirectionAlt)
+    {
+        backlashAlt--;
+        if(backlashAlt < 1)
+        {
+            backlashAlt = 1000;
+            lastDirectionAlt = direction;
+        }
+    }
+    */
 

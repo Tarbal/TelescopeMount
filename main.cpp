@@ -20,8 +20,9 @@ int main(int argc, char *argv[])
     encoderCount countAz(piNumber, encoderRotateA, encoderRotateB, actualCallback);
     encoderCount countAlt(piNumber, encoderInclineA, encoderInclineB, actualCallback);
 
-    PID pidAz(3500, 3000, 31.6875, 0);
-    PID pidAlt(900, 0.205, 250, 1);
+    // PID values need to be tuned to your mount.
+    PID pidAz(1, 0.5, 0.5, 0);   // PID(P, I, D, axis)
+    PID pidAlt(1, 0.5, 0.5, 1);
 
     countAz.start(QThread::TimeCriticalPriority);
     countAlt.start(QThread::TimeCriticalPriority);

@@ -3,8 +3,8 @@
 Here is some telescope mount control software which can be used with any mount using DC motors and incremental encoders,
 all controlled by a Raspberry Pi 3b+ (untested on others!). This software does not include geometric corrections for 
 mechanical imperfections. If it does not point precisely, then you have some mechanical problems -- most likely backlash.
-RA and Dec should be entered in terms of epoch 2000 after calibrating/aligning with polaris (not configured for 
-southern hemisphere).
+RA and Dec should be entered in terms of epoch 2000 after calibrating/aligning with polaris (If you are in the
+southern hemisphere, set the polaris RA and DEC in globalvars.cpp to a convenient star which you wish to use to calibrate).
 
 The GUI is very simple, and you may want to build on this code. This is the last this repository will be updated.
 A future version may or may not be public, but it will have it's own repository. This code is  
