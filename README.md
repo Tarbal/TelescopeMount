@@ -24,8 +24,9 @@ within QTCreator after you have downloaded and installed the boost, pigpio, and 
 run pigpiod. If you want it to run automatically at startup, add the following
 
 #!/bin/sh -e
-pigpiod
-exit 0
+
+pigpiod;
+exit 0;
 
 to your /etc/rc.local file. If it does not exist, then create it. All of this has been tested on Ubuntu 18.04 only.
 Good luck.
