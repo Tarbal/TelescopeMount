@@ -19,7 +19,6 @@ PID::PID(float kp, float ki, float kd, int axis)
     axisID = axis;
     gettimeofday(&newTime, NULL);
     oldTime = newTime;
-    limitFlag = false;
 
     datetime dtime = getTime(to_iso_string(boost::posix_time::microsec_clock::universal_time()));
     iauDtf2d("UTC", dtime.year, dtime.month, dtime.day, dtime.hour, dtime.minute, dtime.second + dtime.fraction / 1e6, &jTime1, &jTime2);
@@ -28,7 +27,6 @@ PID::PID(float kp, float ki, float kd, int axis)
     angleAlt = clampAlt(angleZen);
 
     counterAlt = (int)((angleAlt / (2 * 3.141592654)) * gearRatio * quadratureStates);
-    std::cout << counterAlt << " " << angleAlt * 180 / 3.141592654 << std::endl;
 
     timeInterval = 10;
     debugTime = 0;
@@ -40,9 +38,6 @@ double PID::returnPID(float kp, float ki, float kd, int axis)
     gettimeofday(&newTime, NULL);
 
     double timeChange = (double)(newTime.tv_usec - oldTime.tv_usec) / 1e6;
-//    if(timeChange <= 0)
-//        return 0;
-//    else debugTime += timeChange;
 
     /*Compute all the working error variables*/
     double error;
@@ -59,12 +54,10 @@ double PID::returnPID(float kp, float ki, float kd, int axis)
         dInput = angleAlt - lastInput;
         lastInput = angleAlt;
     }
-    if(!limitFlag)
-        errSum += (error * timeChange);
-//    double dErr = (error - lastError) / timeChange;
+    errSum += (error * timeChange);
 
     /*Compute PID Output*/
-    double output = kp * error + ki * errSum + kd * dInput;
+    double output = kp * error + ki * errSum + (kd * dInput/timeChange);
 
     /*Remember some variables for next time*/
     lastError = error;
@@ -88,9 +81,17 @@ PID::datetime PID::getTime(std::string str)
 
 void PID::report()
 {
-    debugTime += 10;
-    std::cout << " Az: " << /*std::setprecision(15) <<*/ counterAz << " " << targetAz * 180 / 3.141592654 << " " << angleAz * 180 / 3.141592654 << " "  //<< " " << (targetAz - angleAz) * 180 / 3.141592654 << "         "
-              << " Alt: " << counterAlt << " " << targetAlt * 180 / 3.141592654 << " " << angleAlt * 180 / 3.141592654 << std::endl;
+    debugTime += timeInterval;
+    if(axisID==0)
+    {
+        return;
+        std::cout << debugTime << " Az: " << counterAz << " " << targetAz * 180 / 3.141592654 << " " << angleAz * 180 / 3.141592654 << std::endl;
+    }
+    else
+    {
+//        return;
+        std::cout << debugTime << " Alt: " << counterAlt << " " << targetAlt * 180 / 3.141592654 << " " << angleAlt * 180 / 3.141592654 << std::endl;
+    }
 }
 
 bool PID::turnForward(int axis)
@@ -124,8 +125,8 @@ double PID::clampAlt(double zen)
     {
         return 0;
     }
-    else if (alt > 3 * 3.141592654 / 2)
-        return 3 * 3.141592654 / 2;
+    else if (alt > 3.141592654 / 2)
+        return 3.141592654 - alt;
     else return alt;
 }
 
@@ -133,31 +134,18 @@ void PID::motorControl(double speed, int axis, int motorLead1, int motorLead2, b
 {
     double difference;
 
-    if(MainWindow::tracking)
+    if(tracking)
     {
 
-        if(axis == 0)
-        {
-            difference = speed; // (targetAz - angleAz);
-        }
-        else
-        {
-            difference = speed; // (targetAlt - angleAlt);
-        }
+        difference = speed;
 
-        if(difference > 1)
-        {
-            difference = 0.95;
-            limitFlag = true;
-        }
-        else if(difference < 0)
+        if(difference > 2)
+            difference = 2;
+        else if (difference < 0)
         {
             difference = -difference;
-            limitFlag = true;
-        }
-        else
-        {
-            limitFlag = false;
+            if(difference > 2)
+                difference = 2;
         }
     }
 
@@ -192,7 +180,7 @@ void PID::run()
 
         double output;
 
-        if(MainWindow::tracking)
+        if(tracking)
         {
             datetime dtime = getTime(to_iso_string(boost::posix_time::microsec_clock::universal_time()));
             iauDtf2d("UTC", dtime.year, dtime.month, dtime.day, dtime.hour, dtime.minute, dtime.second + dtime.fraction / 1e6, &jTime1, &jTime2);
@@ -209,12 +197,7 @@ void PID::run()
             else if(axisID == 1)
                 motorControl(std::abs(output), axisID, pinInclineA, pinInclineB, turnForward((axisID)));
 
-            /*
-            double diff = (targetAlt - angleAlt) * 180 / 3.141592654;
-            if(diff > 180) diff -= 360;
-            std::cout << dtime.second + dtime.fraction / 1e6 << "   " << diff << std::endl;
-*/
-            report();
+//            report();
 
         }
         else
