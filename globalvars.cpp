@@ -24,6 +24,9 @@ double humidity = 0.3;
 // wavelength which you wish to observe in microns
 double wavelength = 0.55;
 
+// your elevation above sea level in meters
+double elevation = 0;
+
 // encoder gpio pins
 const int encoderRotateA = 22;
 const int encoderRotateB = 27;

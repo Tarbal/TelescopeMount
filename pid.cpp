@@ -22,8 +22,9 @@ PID::PID(float kp, float ki, float kd, int axis)
 
     datetime dtime = getTime(to_iso_string(boost::posix_time::microsec_clock::universal_time()));
     iauDtf2d("UTC", dtime.year, dtime.month, dtime.day, dtime.hour, dtime.minute, dtime.second + dtime.fraction / 1e6, &jTime1, &jTime2);
-    iauAtco13(polarisRA, polarisDEC, 0.0, 0.0, 0.0, 0.0, jTime1, jTime2, 0.0, -98.339273*3.141592654/180,
-        30.334595*3.141592654/180, 356.616, 0.0, 0.0, 1013.25, 16.0, 0.5, 0.59, &angleAz, &angleZen, &hourAngle, &CIOdec, &CIORA, &EqOrigins);
+    iauAtco13(rAscension, declination, 0.0, 0.0, 0.0, 0.0, jTime1, jTime2, 0.0, longitude,
+                      latitude, elevation, 0.0, 0.0, pressure, temperature, humidity, wavelength, &targetAz, &targetZen, &hourAngle, &CIOdec, &CIORA, &EqOrigins);
+
     angleAlt = clampAlt(angleZen);
 
     counterAlt = (int)((angleAlt / (2 * 3.141592654)) * gearRatio * quadratureStates);
@@ -185,7 +186,7 @@ void PID::run()
             datetime dtime = getTime(to_iso_string(boost::posix_time::microsec_clock::universal_time()));
             iauDtf2d("UTC", dtime.year, dtime.month, dtime.day, dtime.hour, dtime.minute, dtime.second + dtime.fraction / 1e6, &jTime1, &jTime2);
             iauAtco13(rAscension, declination, 0.0, 0.0, 0.0, 0.0, jTime1, jTime2, 0.0, longitude,
-                      latitude, 356.616, 0.0, 0.0, pressure, temperature, humidity, wavelength, &targetAz, &targetZen, &hourAngle, &CIOdec, &CIORA, &EqOrigins);
+                      latitude, elevation, 0.0, 0.0, pressure, temperature, humidity, wavelength, &targetAz, &targetZen, &hourAngle, &CIOdec, &CIORA, &EqOrigins);
 
             targetAlt = clampAlt(targetZen);
 
