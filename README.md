@@ -2,7 +2,7 @@
 
 Here is some telescope mount control software which can be used with any mount using DC gear motors and incremental encoders,
 all controlled by a Raspberry Pi 3b+ (untested on other versions). This software does not include geometric corrections for 
-mechanical imperfections. If it does not point precisely, then you have some mechanical problems -- most likely backlash.
+mechanical imperfections. If it does not point accurately, then you have some mechanical problems -- most likely backlash.
 RA and Dec should be entered in terms of epoch 2000 after calibrating/aligning with polaris (If you are in the
 southern hemisphere, set the polaris RA and DEC in globalvars.cpp to a convenient star which you wish to use to calibrate).
 
