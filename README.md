@@ -1,5 +1,8 @@
 # TelescopeMount
 
+Update 1/18/21: It has come to my attention that the PID algorithm was never updated in this version. Uploaded as 
+optional files, the updated PID algorithm is the much improved version I have been using for the past 7 months.
+
 Here is some telescope mount control software which can be used with any mount using DC gear motors and incremental encoders,
 all controlled by a Raspberry Pi 3b+ (untested on other versions). This software does not include geometric corrections for 
 mechanical imperfections. If it does not point accurately, then you have some mechanical problems -- most likely backlash.
