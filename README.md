@@ -30,7 +30,7 @@ southern hemisphere, set the polaris RA and DEC in globalvars.cpp to a convenien
 
 The GUI is very simple, and you may want to build on this code. This is the last this repository will be updated.
 A future version may or may not be public, but it will have it's own repository. This code is  
-GNU General Public License (GNU GPL), copyright John Emil Petersen III, 2019-2020.
+GNU General Public License (GNU GPL), copyright John Emil Petersen III, 2019-2021.
 
 You simply need to change the global variables in globalvars.cpp, such as gearRatio and quadratureStates to what is 
 appropriate for your mount. You may want to measure environmental variables such as temperature with instrumentation, 
