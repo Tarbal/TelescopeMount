@@ -43,45 +43,26 @@ double PID::returnPID(float kp, float ki, float kd, int axis)
     if(axis == 0)
     {
         double error = targetAz - angleAz;
-        if(sameSign(error, lastError))
-            errSumAz += (error * timeChange);
-        double dErr = (error - lastError) / timeChange;
-        double output = (kp * error) + (ki * errSumAz) + (kd * dErr);
-
-        if(output > 0)
-            output -= std::abs(((output - oldOutput)*timeChange)/200);
-        else if(output < 0)
-            output += std::abs(((output - oldOutput)*timeChange)/200);
-
-        if(!sameSign(output, oldOutput))
-            output = 0;
-        report();
-        lastError = error;
-        oldTime = newTime;
-        oldOutput = output;
-        return output;
     }
-    else
-    {
-        double error = targetAlt - angleAlt;
-        if(sameSign(error, lastError))
-            errSumAlt += (error * timeChange);
-        double dErr = (error - lastError) / timeChange;
-        double output = (kp * error) + (ki * errSumAz) + (kd * dErr);
+    else double error = targetAlt - angleAlt;
 
-        if(output > 0)
-            output -= std::abs(((output - oldOutput)*timeChange)/200);
-        else if(output < 0)
-            output += std::abs(((output - oldOutput)*timeChange)/200);
+    if(sameSign(error, lastError))
+        errSumAz += (error * timeChange);
+    double dErr = (error - lastError) / timeChange;
+    double output = (kp * error) + (ki * errSumAz) + (kd * dErr);
 
-        if(!sameSign(output, oldOutput))
-            output = 0;
-        report();
-        lastError = error;
-        oldTime = newTime;
-        oldOutput = output;
-        return output;
-    }
+    if(output > 0)
+        output -= std::abs(((output - oldOutput)*timeChange)/200);
+    else if(output < 0)
+        output += std::abs(((output - oldOutput)*timeChange)/200);
+
+    if(!sameSign(output, oldOutput))
+        output = 0;
+    report();
+    lastError = error;
+    oldTime = newTime;
+    oldOutput = output;
+    return output;
 
 }
 
