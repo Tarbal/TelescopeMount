@@ -1,5 +1,8 @@
 # TelescopeMount
 
+Update 1/19/21: I cleaned up the updated PID algorithm, even though I said 8 months ago that I would never update
+this repository ever again. You have to stay one step ahead of your critics...
+
 Update 1/18/21: It has come to my attention that the PID algorithm was never updated in this version. Uploaded as 
 optional files, the updated PID algorithm is the much improved version I have been using for the past 7 months.
 
