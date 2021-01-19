@@ -1,5 +1,21 @@
 # TelescopeMount
 
+Second Update of 1/19/21: A good starting point for PID settings, assuming you use the updated algorithm, would be
+P = 20000, I = 1000, and D = 26. These are the parameters I use currently. Ultimately, however, the optimal values
+for these parameters will depend on a number of factors, including motor torque, power output, mount resistance to
+applied torque, and damping. I suggest reading up on the subject and mathematics of PID, before even attempting 
+such an endeavor. When I said "I cannot stress how important this is," I meant it. Furthermore, a good reference
+for choosing the appropriate DC motor (as well as everything else related to mount design and construction)is the
+following: 
+
+Trueblood, M. and Genet, R.M., Telescope Control (Second English Edition), Willmann-Bell, Inc. (Richmond, 1997). 
+
+If you are taking the project seriously, I would recommend another book as well:
+
+Smart, W.M., Textbook on Spherical Astronomy (Sixth Edition, reprinted), Cambridge University Press (Cambridge, 1979).
+
+At some point, you'll need to account for geometric errors, which are covered in the Trueblood/Genet book. Good luck.
+
 Update 1/19/21: I cleaned up the updated PID algorithm, even though I said 8 months ago that I would never update
 this repository ever again. You have to stay one step ahead of your critics...
 
