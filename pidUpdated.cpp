@@ -1,3 +1,6 @@
+//copyright John Emil Petersen III, 2019-2021... This particular file and its associated PID algorithm is for demonstrative purposes to the public only, 
+//and is not permitted to be used in commercial applications without expressed written permission of John Emil Petersen III
+
 #include "pid.h"
 #include "mainwindow.h"
 #include "globalvars.h"
