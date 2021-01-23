@@ -1,8 +1,8 @@
 # TelescopeMount
 
-Third Update of 1/19/21: Clarification of copyright on the updated PID algorithm is now added. The license on files 
-pidUpdated.cpp and pidUpdated.h is to be considered separate from the rest of this repository, as is indicated
-in comments at the top of each file.
+1/23/21: Clarification of copyright on the updated PID algorithm is now added. The license on the file
+pid.pseudo is to be considered separate from the rest of this repository, as is indicated
+in comments at the top of the file.
 
 Second Update of 1/19/21: A good starting point for PID settings, assuming you use the updated algorithm, would be
 P = 20000, I = 1000, and D = 26. These are the parameters I use currently. Ultimately, however, the optimal values
