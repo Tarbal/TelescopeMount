@@ -1,21 +1,11 @@
-//copyright John Emil Petersen III, 2019-2021... This particular file and its associated PID algorithm is for demonstrative purposes to the public only, 
-//and is not permitted to be used in commercial applications without expressed written permission of John Emil Petersen III
-
-#include "pid.h"
-#include "mainwindow.h"
-#include "globalvars.h"
-#include <cmath>
-#include <thread>
-#include <chrono>
-#include <sys/time.h>
-#include <iostream>
-#include <sofa.h>
-#include <boost/date_time/posix_time/posix_time.hpp>
-#include <QMutex>
-#include <iomanip>
+// copyright John Emil Petersen III, 2019-2021... This particular file and its associated PID algorithm is for demonstrative purposes to the public only, 
+// and is not permitted to be used in commercial applications without expressed written permission of John Emil Petersen III
+// The following is a C/C++ algorithm for a closed PID control loop utilizing incremental encoders and DC motors
+// In some places, actual code is removed and replaced by pseudo code, indicated by the prefix Pseudo
 
 PID::PID(float kp, float ki, float kd, int axis)
 {
+	// P, I, and D parameters 
     KP = kp;
     KI = ki;
     KD = kd;
@@ -23,25 +13,18 @@ PID::PID(float kp, float ki, float kd, int axis)
     gettimeofday(&newTime, NULL);
     oldTime = newTime;
 
-    datetime dtime = getTime(to_iso_string(boost::posix_time::microsec_clock::universal_time()));
-    iauDtf2d("UTC", dtime.year, dtime.month, dtime.day, dtime.hour, dtime.minute, dtime.second + dtime.fraction / 1e6, &jTime1, &jTime2);
-    iauAtco13(rAscension, declination, 0.0, 0.0, 0.0, 0.0, jTime1, jTime2, 0.0, longitude,
-                      latitude, elevation, 0.0, 0.0, pressure, temperature, humidity, wavelength, &targetAz, &targetZen, &hourAngle, &CIOdec, &CIORA, &EqOrigins);
-    angleAlt = clampAlt(angleZen);
-    counterAlt = (int)((angleAlt / (2 * 3.141592654)) * gearRatio * quadratureStates);
+    datetime dtime = // Pseudo - put time into appropriate format struct
+
+    // Pseudo - convert RA and DEC coordinates into Alt and Az coordinates
 
     timeInterval = 10;
-    debugTime = 0;
 }
 
 double PID::returnPID(float kp, float ki, float kd, int axis)
 {
     gettimeofday(&newTime, NULL);
 
-    double timeChange = (double)(newTime.tv_usec - oldTime.tv_usec) / 1e6;
-
-//    if(timeChange < 0)
-//        return 0;
+    double timeChange = (double)(newTime.tv_usec - oldTime.tv_usec) / 1e6; // convert time change between encoder ticks from microseconds to decimal seconds
 
     if(axis == 0)
     {
@@ -49,17 +32,18 @@ double PID::returnPID(float kp, float ki, float kd, int axis)
     }
     else double error = targetAlt - angleAlt;
 
+    // below is the actual algorithm
     if(sameSign(error, lastError))
         errSumAz += (error * timeChange);
     double dErr = (error - lastError) / timeChange;
     double output = (kp * error) + (ki * errSumAz) + (kd * dErr);
 
     if(output > 0)
-        output -= std::abs(((output - oldOutput)*timeChange)/200);
+        output -= std::abs(((output - oldOutput)*timeChange)/200); // divide by 200 for purposes of damping
     else if(output < 0)
         output += std::abs(((output - oldOutput)*timeChange)/200);
 
-    if(!sameSign(output, oldOutput))
+    if(!sameSign(output, oldOutput)) // upon change of direction, do not update motor
         output = 0;
     report();
     lastError = error;
@@ -69,6 +53,7 @@ double PID::returnPID(float kp, float ki, float kd, int axis)
 
 }
 
+// check signs of two input doubles
 bool PID::sameSign(double d1, double d2)
 {
     if(d1*d2 >= 0)
@@ -76,6 +61,7 @@ bool PID::sameSign(double d1, double d2)
     else return false;
 }
 
+// break a time format which is a string into appropriate variables of a struct
 PID::datetime PID::getTime(std::string str)
 {
     datetime dt;
@@ -89,21 +75,7 @@ PID::datetime PID::getTime(std::string str)
     return dt;
 }
 
-void PID::report()
-{
-    debugTime += timeInterval;
-    if(axisID==0)
-    {
-        return;
-        std::cout << debugTime << " Az: " << counterAz << " " << (targetAz - angleAz) * 180 / 3.141592654 << std::endl;
-    }
-    else
-    {
-//        return;
-        std::cout << debugTime << " Alt: " << counterAlt << " " << (targetAlt - angleAlt) * 180 / 3.141592654 << std::endl;
-    }
-}
-
+//determine which direction to turn the mount given arbitrary input
 bool PID::turnForward(int axis)
 {
     double diff;
@@ -127,6 +99,7 @@ bool PID::turnForward(int axis)
           return true;
 }
 
+// clamp the Alt axis such that the mounted telescope tube never achieves an angle exceeding verticle orientation
 double PID::clampAlt(double zen)
 {
     double alt = (3.141592654/2) - zen;
@@ -140,6 +113,7 @@ double PID::clampAlt(double zen)
     else return alt;
 }
 
+//route the output of the PID algorithm to this pulse width modulated DC motor control method
 void PID::motorControl(double speed, int axis, int motorLead1, int motorLead2, bool forward)
 {
     double difference;
@@ -156,24 +130,22 @@ void PID::motorControl(double speed, int axis, int motorLead1, int motorLead2, b
         if(difference > 1)
             difference = 1;
 
-        std::cout << difference << std::endl;
     }
 
     else difference = speed / pwmRange;
 
     if(!forward)
     {
-        set_PWM_dutycycle(piNumber, motorLead2, 0);
-        set_PWM_dutycycle(piNumber, motorLead1, (int)(difference * pwmRange));
+        // if sign indicates a particular direction, reset the pulse width modulation details including frequency and range
     }
     else
     {
-        set_PWM_dutycycle(piNumber, motorLead1, 0);
-        set_PWM_dutycycle(piNumber, motorLead2, (int)(difference * pwmRange));
+	// if sign indicates the opposite direction from above, reset the pulse width modulation details including frequency and range
     }
 
 }
 
+// determine direction to turn the motor
 bool PID::whichDirection(double increment)
 {
     if(increment >= 0)
@@ -183,27 +155,23 @@ bool PID::whichDirection(double increment)
 
 void PID::run()
 {
-    QMutex mutie;
     while(programRunning)
     {
-        mutie.lock();
-
         double output;
 
         if(tracking)
         {
-            datetime dtime = getTime(to_iso_string(boost::posix_time::microsec_clock::universal_time()));
-            iauDtf2d("UTC", dtime.year, dtime.month, dtime.day, dtime.hour, dtime.minute, dtime.second + dtime.fraction / 1e6, &jTime1, &jTime2);
-	    iauAtco13(rAscension, declination, 0.0, 0.0, 0.0, 0.0, jTime1, jTime2, 0.0, longitude,
-                      latitude, elevation, 0.0, 0.0, pressure, temperature, humidity, wavelength, &targetAz, &targetZen, &hourAngle, &CIOdec, &CIORA, &EqOrigins);
-            targetAlt = clampAlt(targetZen);
+	    datetime dtime = // Pseudo - put time into appropriate format struct
 
+	    // Pseudo - convert RA and DEC coordinates into Alt and Az coordinates
 
-            bool dir = turnForward(axisID);
+            targetAlt = clampAlt(targetZen); // take the returned zenith angle and convert it to Altitude coordinate
 
-            output = returnPID(KP, KI, KD, axisID);
+            bool dir = turnForward(axisID);  // determine which direction to turn the mount
 
+            output = returnPID(KP, KI, KD, axisID);  
 
+	    // control the motors appropriately, according to the PID output
             if(axisID == 0)
                 motorControl(std::abs(output), axisID, pinRotateA, pinRotateB, dir);
             else if(axisID == 1)
@@ -219,8 +187,7 @@ void PID::run()
                 motorControl(std::abs(AltInc), 1, pinInclineA, pinInclineB, whichDirection(AltInc));
         }
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(timeInterval));
-        mutie.unlock();
+	// Pseudo - sleep the while loop for set number of milliseconds
     }
-    MainWindow::stopAxis(axisID);
+    stopAxis(axisID); // Pseudo - stop motor when programRunning becomes false
 }
