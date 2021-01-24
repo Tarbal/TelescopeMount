@@ -53,12 +53,18 @@ motor drivers' PWM connection. The same goes for the encoderRotate and encoderIn
 
 In order to compile on a Raspberry Pi 3b+, you will need to link the appropriate libraries. I suggest you compile
 within QTCreator after you have downloaded and installed the boost, pigpio, and sofa libraries. Then, you need to 
-run pigpiod. If you want it to run automatically at startup, add the following
+run pigpiod. If you want it to run automatically at startup, as well as sync the time after a 15 second wait, and set the 
+cpu to performance mode, add the following
 
 #!/bin/sh -e
 
 pigpiod;
+echo 'GOVERNOR="performance"' | tee /etc/default/cpufrequtils;
+systemctl disable ondemand;
+sleep 15;
+ntpdate time.nist.gov;
 exit 0;
+
 
 to your /etc/rc.local file. If it does not exist, then create it. Don't forget to make it executable by typing
 
