@@ -60,10 +60,13 @@ run pigpiod. If you want it to run automatically at startup, add the following
 pigpiod;
 exit 0;
 
-to your /etc/rc.local file. If it does not exist, then create it. All of this has been tested on Ubuntu 18.04 only.
-Good luck. The reason for 18.04 is due to the way GPIOs are controlled with this distribution. At some point, cpu
-performance was changed to an "on demand" setting, which causes problems, so now... you need to add cpufrequtility
-and set it to stay running at 1.5 GHz...
+to your /etc/rc.local file. If it does not exist, then create it. Don't forget to make it executable by typing
+
+sudo chmod a+x /etc/rc.local
+
+All of this has been tested on Ubuntu 18.04 only. Good luck. The reason for 18.04 is due to the way GPIOs are 
+controlled with this distribution. At some point, cpu performance was changed to an "on demand" setting, 
+which causes problems, so now... you need to add cpufrequtility and set it to stay running at 1.5 GHz...
 
 Once you have followed every step, You still need to tune the PID parameters in the main function. I cannot stress how
 important this is.
