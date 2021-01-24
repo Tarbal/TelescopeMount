@@ -67,7 +67,11 @@ systemctl disable ondemand;
 
 sleep 30;
 
+service ntp stop;
+
 ntpdate time.nist.gov;
+
+service ntp start;
 
 exit 0;
 
