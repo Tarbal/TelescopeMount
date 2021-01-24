@@ -1,6 +1,9 @@
 # TelescopeMount
 
 1/24/21: apt-get has been acting funny lately, so wherever I indicate using that command, use aptitude instead.
+Due to this reason, undocumented kernel updates to 18.04, and cpu performance management settings on 18.04,
+this repository has become more trouble than it is worth to maintain, and this is the final update. Work on
+the proprietary version for N-Dimensional Technologies (https://n-dtech.com) will continue as planned.
 
 1/23/21: Clarification of copyright on the updated PID algorithm is now added. The license on the file
 pid.pseudo is to be considered separate from the rest of this repository, as is indicated
