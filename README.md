@@ -1,5 +1,7 @@
 # TelescopeMount
 
+1/24/21: apt-get has been acting funny lately, so wherever I indicate using that command, use aptitude instead.
+
 1/23/21: Clarification of copyright on the updated PID algorithm is now added. The license on the file
 pid.pseudo is to be considered separate from the rest of this repository, as is indicated
 in comments at the top of the file. It is purely provided for demonstrative purposes.
