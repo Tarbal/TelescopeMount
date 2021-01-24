@@ -3,7 +3,8 @@
 1/24/21: apt-get has been acting funny lately, so wherever I indicate using that command, use aptitude instead.
 Due to this reason, undocumented kernel updates to 18.04, and cpu performance management settings on 18.04,
 this repository has become more trouble than it is worth to maintain, and this is the final update. Work on
-the proprietary version for N-Dimensional Technologies (https://n-dtech.com) will continue as planned.
+the proprietary version for N-Dimensional Technologies (https://n-dtech.com) will continue as planned. That
+being said, this version compiles and runs fine as of today on Ubuntu 18.04 Raspberry Pi 4.
 
 1/23/21: Clarification of copyright on the updated PID algorithm is now added. The license on the file
 pid.pseudo is to be considered separate from the rest of this repository, as is indicated
@@ -53,16 +54,21 @@ motor drivers' PWM connection. The same goes for the encoderRotate and encoderIn
 
 In order to compile on a Raspberry Pi 3b+, you will need to link the appropriate libraries. I suggest you compile
 within QTCreator after you have downloaded and installed the boost, pigpio, and sofa libraries. Then, you need to 
-run pigpiod. If you want it to run automatically at startup, as well as sync the time after a 15 second wait, and set the 
+run pigpiod. If you want it to run automatically at startup, as well as sync the time after a 30 second wait, and set the 
 cpu to performance mode, add the following
 
 #!/bin/sh -e
 
 pigpiod;
+
 echo 'GOVERNOR="performance"' | tee /etc/default/cpufrequtils;
+
 systemctl disable ondemand;
-sleep 15;
+
+sleep 30;
+
 ntpdate time.nist.gov;
+
 exit 0;
 
 
