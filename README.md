@@ -58,7 +58,9 @@ pigpiod;
 exit 0;
 
 to your /etc/rc.local file. If it does not exist, then create it. All of this has been tested on Ubuntu 18.04 only.
-Good luck.
+Good luck. The reason for 18.04 is due to the way GPIOs are controlled with this distribution. At some point, cpu
+performance was changed to an "on demand" setting, which causes problems, so now... you need to add cpufrequtility
+and set it to stay running at 1.5 GHz...
 
 Once you have followed every step, You still need to tune the PID parameters in the main function. I cannot stress how
 important this is.
